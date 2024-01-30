@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cubo 3D em JavaScript Puro</title>
+    <style>
+        canvas { background-color: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <canvas id="meuCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('meuCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const vertices = [
+            [1,1,0], [0,1,0], 
+            [0,0,0], [1,0,0], 
+            [1,1,1], [0,1,1], 
+            [0,0,1], [1,0,1],
+        ];
+
+        const arestas = [
+            [0, 1], [1, 2], [2, 3], [3, 0], 
+            [4, 5], [5, 6], [6, 7], [7, 4], 
+            [0, 4], [1, 5], [2, 6], [3, 7]
+        ];
+
+        let angleX = 0;
+        let angleY = 0;
+        let angleZ = 0;
+
+        function project([x, y, z]) {
+            const factor = 200 / (z + 2.5);
+            return [x * factor + canvas.width / 2, y * factor + canvas.height / 2];
+        }
+
+        function rotate([x, y, z], angleX, angleY, angleZ) {
+            const cosX = Math.cos(angleX);
+            const sinX = Math.sin(angleX);
+            const cosY = Math.cos(angleY);
+            const sinY = Math.sin(angleY);
+            const cosZ = Math.cos(angleZ);
+            const sinZ = Math.sin(angleZ);
+
+            let xz = cosY * (sinZ * y + cosZ * x) - sinY * z;
+            let yz = sinX * (cosY * z + sinY * (sinZ * y + cosZ * x)) + cosX * (cosZ * y - sinZ * x);
+            let zz = cosX * (cosY * z + sinY * (sinZ * y + cosZ * x)) - sinX * (cosZ * y - sinZ * x);
+
+            return [xz, yz, zz];
+        }
+
+        function desenharArestas(vertices, arestas, contexto) {
+            arestas.forEach(([a, b]) => {
+                const [ax, ay] = project(vertices[a]);
+                const [bx, by] = project(vertices[b]);
+
+                contexto.beginPath();
+                contexto.moveTo(ax, ay);
+                contexto.lineTo(bx, by);
+                contexto.stroke();
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const verticesRotacionados = vertices.map(v => rotate(v, angleX, angleY, angleZ));
+            desenharArestas(verticesRotacionados, arestas, ctx);
+
+            angleX += 0.01;
+            angleY += 0.01;
+            angleZ += 0.01;
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
