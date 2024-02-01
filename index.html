@@ -3,6 +3,7 @@
 <head>
     <title>Cubo 3D em JavaScript Puro</title>
     <style>
+        body{background-color:#f0f0f0 ; width: 90vw;height: 90vh;display: flex;justify-content:center;align-items: center;}
         canvas { background-color: #f0f0f0; }
     </style>
 </head>
@@ -30,7 +31,7 @@
         let angleZ = 0;
 
         function project([x, y, z]) {
-            const factor = 200 / (z + 2.5);
+            const factor = (z+2.5)*40;
             return [x * factor + canvas.width / 2, y * factor + canvas.height / 2];
         }
 
